@@ -151,8 +151,14 @@ export default function Home({ data }) {
                 <a href={item.url} target="_blank" rel="noreferrer">Link</a>
               </td>
               <td>
-                <button onClick={() => handleEdit(item)} title="Edit">✏️</button>
-                <button onClick={() => handleDelete(item.id)} title="Delete" style={{ marginLeft: '6px' }}>🗑️</button>
+                {adminPassword ? (
+                  <>
+                    <button onClick={() => handleEdit(item)} title="Edit">✏️</button>
+                    <button onClick={() => handleDelete(item.id)} title="Delete" style={{ marginLeft: '6px' }}>🗑️</button>
+                  </>
+                ) : (
+                  '-'
+                )}
               </td>
               <td>
                 {item.sha ? (
