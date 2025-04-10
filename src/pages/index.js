@@ -13,12 +13,14 @@ export default function Home({ data }) {
   });
 
   const [search, setSearch] = useState('');
+  const [adminPassword, setAdminPassword] = useState(''); // ✅ New state for admin password
+  const [entries, setEntries] = useState(data); // for refresh without reload
 
   const handleDownload = () => {
-    const fileData = JSON.stringify(data, null, 2);
+    const fileData = JSON.stringify(entries, null, 2);
     const blob = new Blob([fileData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-  
+
     const link = document.createElement('a');
     link.href = url;
     link.download = `registry-${new Date().toISOString().split('T')[0]}.json`;
@@ -32,29 +34,32 @@ export default function Home({ data }) {
     const response = await fetch('/api/commit-entry', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({ ...formData, password: adminPassword }),
     });
     if (response.ok) {
       alert(formData.id ? 'Entry updated!' : 'Entry added!');
-      window.location.reload();
+      const updated = await fetch('/api/entries');
+      const freshData = await updated.json();
+      setEntries(freshData);
+      setFormData({ id: '', newsdate: '', reportdate: '', place: '', what: '', actiondate: '', meta: '', url: '' });
     }
   };
 
   const handleEdit = (entry) => {
     setFormData(entry);
-    window.scrollTo(0, 0); // scroll to top to view form
+    window.scrollTo(0, 0);
   };
 
   const handleDelete = async (id) => {
     const confirmed = window.confirm('Delete this entry?');
     if (!confirmed) return;
-  
+
     const response = await fetch(`/api/delete-entry`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ id, password: adminPassword }),
     });
-  
+
     if (response.ok) {
       const updated = await fetch('/api/entries');
       const freshData = await updated.json();
@@ -63,8 +68,8 @@ export default function Home({ data }) {
       alert('Failed to delete entry.');
     }
   };
-  
-  const filteredData = data.filter(
+
+  const filteredData = entries.filter(
     (item) =>
       item.place?.toLowerCase().includes(search.toLowerCase()) ||
       item.what?.toLowerCase().includes(search.toLowerCase())
@@ -76,6 +81,15 @@ export default function Home({ data }) {
 
       <form onSubmit={handleSubmit}>
         <input type="hidden" value={formData.id || ''} />
+
+        {/* ✅ Admin Password Field */}
+        <input
+          type="password"
+          placeholder="Admin password"
+          value={adminPassword}
+          onChange={(e) => setAdminPassword(e.target.value)}
+          style={{ marginBottom: '10px' }}
+        />
 
         <input type="date" placeholder="News Date" value={formData.newsdate || ''}
           onChange={(e) => setFormData({ ...formData, newsdate: e.target.value })} />

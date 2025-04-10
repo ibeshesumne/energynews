@@ -1,7 +1,11 @@
 export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-      return res.status(405).end('Method Not Allowed');
+    if (req.method !== 'POST') return res.status(405).end();
+
+    const { password, ...entryData } = req.body;
+    if (password !== process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({ error: 'Unauthorized' });
     }
+    
   
     const {
       GITHUB_TOKEN,

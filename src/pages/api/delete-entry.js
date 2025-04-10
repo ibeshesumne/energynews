@@ -9,7 +9,10 @@ export default async function handler(req, res) {
   
     const BRANCH = 'main';
     const FILE_PATH = 'data/registry.json';
-    const { id } = req.body;
+    const { id } = req.body;const { id, password } = req.body;
+    if (password !== process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
   
     // 1. Fetch latest file from GitHub
     const repoUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${FILE_PATH}`;
