@@ -101,6 +101,7 @@ export default function Home({ data }) {
             <th>Meta</th>
             <th>URL</th>
             <th>Edit</th>
+            <th>Commit</th>
           </tr>
         </thead>
         <tbody>
@@ -113,8 +114,25 @@ export default function Home({ data }) {
               <td>{item.place}</td>
               <td>{item.what}</td>
               <td>{item.meta}</td>
-              <td><a href={item.url} target="_blank" rel="noreferrer">Link</a></td>
-              <td><button onClick={() => handleEdit(item)}>Edit</button></td>
+              <td>
+                <a href={item.url} target="_blank" rel="noreferrer">Link</a>
+              </td>
+              <td>
+                <button onClick={() => handleEdit(item)}>Edit</button>
+              </td>
+              <td>
+                {item.sha ? (
+                  <a
+                    href={`https://github.com/ibeshesumne/energynews/commit/${item.sha}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </a>
+                ) : (
+                  '-'
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

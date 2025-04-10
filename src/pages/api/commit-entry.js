@@ -55,6 +55,8 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Failed to commit file', details: error });
     }
   
-    return res.status(200).json({ success: true, id: newEntry.id });
+    const commitData = await commitRes.json(); 
+    newEntry.sha = commitData.commit.sha;
+    return res.status(200).json({ success: true, id: newEntry.id, sha: newEntry.sha });
   }
   
