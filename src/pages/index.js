@@ -16,7 +16,7 @@ export default function Home({ data }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch('/api/submit-entry', {
+    const response = await fetch('/api/commit-entry', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
