@@ -14,6 +14,19 @@ export default function Home({ data }) {
 
   const [search, setSearch] = useState('');
 
+  const handleDownload = () => {
+    const fileData = JSON.stringify(data, null, 2);
+    const blob = new Blob([fileData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+  
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `registry-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const response = await fetch('/api/commit-entry', {
@@ -71,6 +84,10 @@ export default function Home({ data }) {
 
       <input type="text" placeholder="Search..." style={{ marginTop: '20px', width: '300px' }}
         value={search} onChange={(e) => setSearch(e.target.value)} />
+
+      <button onClick={handleDownload} style={{ margin: '20px 10px 0 0' }}>
+        ⬇️ Download JSON
+      </button>
 
       <table style={{ marginTop: '20px', borderCollapse: 'collapse' }}>
         <thead>
