@@ -45,6 +45,25 @@ export default function Home({ data }) {
     window.scrollTo(0, 0); // scroll to top to view form
   };
 
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm('Delete this entry?');
+    if (!confirmed) return;
+  
+    const response = await fetch(`/api/delete-entry`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
+  
+    if (response.ok) {
+      const updated = await fetch('/api/entries');
+      const freshData = await updated.json();
+      setEntries(freshData);
+    } else {
+      alert('Failed to delete entry.');
+    }
+  };
+  
   const filteredData = data.filter(
     (item) =>
       item.place?.toLowerCase().includes(search.toLowerCase()) ||
@@ -100,7 +119,7 @@ export default function Home({ data }) {
             <th>What</th>
             <th>Meta</th>
             <th>URL</th>
-            <th>Edit</th>
+            <th>Actions</th>
             <th>Commit</th>
           </tr>
         </thead>
@@ -118,7 +137,8 @@ export default function Home({ data }) {
                 <a href={item.url} target="_blank" rel="noreferrer">Link</a>
               </td>
               <td>
-                <button onClick={() => handleEdit(item)}>Edit</button>
+                <button onClick={() => handleEdit(item)} title="Edit">✏️</button>
+                <button onClick={() => handleDelete(item.id)} title="Delete" style={{ marginLeft: '6px' }}>🗑️</button>
               </td>
               <td>
                 {item.sha ? (
